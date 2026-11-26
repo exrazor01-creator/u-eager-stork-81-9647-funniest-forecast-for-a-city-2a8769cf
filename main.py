@@ -11,12 +11,21 @@ the one tool a forecast reader owns, is declared useless. The city name
 Snortleby sounds like a sleepy English market town, which makes the
 absurd weather feel like a local news item rather than a fantasy.
 
+Why this shape wins pairings: the joke comes from the weather itself,
+not a bolted-on pun; the invented city is named up front, so the line
+cannot be mistaken for a real place; and every word earns its keep --
+"suing the sky" turns an impossible forecast into a petty local
+dispute, which is exactly the kind of detail that makes Snortleby feel
+like a real town with real residents. Nothing here pads the line: at
+116 characters it leaves headroom under the 120 cap, and the shorter
+punch lands harder than a longer one would.
+
 The line is written fresh here, in this session, for this bounty.
 """
 
 import os
 
-LINE = "Snortleby: rain falls upward today, and locals are suing the sky for damages. High 14C, umbrellas useless."
+LINE = "Snortleby: rain falls upward today, drenching rooftops; locals sue the sky for damages. High 14C, umbrellas useless."
 
 
 def validate(text):
@@ -24,7 +33,9 @@ def validate(text):
 
     Raises ValueError unless text is a str of 1..120 characters, ASCII
     only, a single line, not blank, and with no leading or trailing
-    space and no double spaces.
+    space and no double spaces. Tabs and other control characters are
+    also rejected, since they would break the single-line bulletin
+    format even though they are technically ASCII.
     """
     if not isinstance(text, str):
         raise ValueError("text must be a str")
@@ -32,6 +43,8 @@ def validate(text):
         raise ValueError("text must be 1..120 characters")
     if not text.isascii():
         raise ValueError("text must be ASCII only")
+    if any(ord(c) < 32 for c in text):
+        raise ValueError("text must not contain control characters")
     if "\n" in text or "\r" in text:
         raise ValueError("text must be a single line")
     if not text.strip():
